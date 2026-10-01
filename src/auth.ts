@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { createSession, getSession } from "./session.js";
+import { createSession, getSession, refreshSession } from "./session.js";
 
 export interface AuthedRequest extends Request {
   userId?: string;
@@ -14,6 +14,20 @@ export function login(ttlSeconds: number) {
     }
     const session = createSession(userId, ttlSeconds);
     res.status(201).json({ token: session.token, expiresAt: session.expiresAt });
+  };
+}
+
+export function refresh(ttlSeconds: number) {
+  return (req: AuthedRequest, res: Response) => {
+    const header = req.header("authorization") ?? "";
+    const current = header.startsWith("Bearer ") ? header.slice(7) : "";
+    const session = current ? refreshSession(current, ttlSeconds) : undefined;
+    if (!session) {
+      res.status(401).json({ error: "a valid session is required" });
+      return;
+    }
+    res.cookie("session", session.token, { secure: true, sameSite: "lax" });
+    res.json({ expiresAt: session.expiresAt });
   };
 }
 
