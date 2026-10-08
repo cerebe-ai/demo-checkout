@@ -1,6 +1,6 @@
 import express from "express";
 import { loadConfig } from "./config.js";
-import { login, requireSession, type AuthedRequest } from "./auth.js";
+import { login, refresh, requireSession, type AuthedRequest } from "./auth.js";
 import { totals, type LineItem } from "./billing.js";
 
 export function createApp() {
@@ -13,6 +13,7 @@ export function createApp() {
   });
 
   app.post("/login", login(config.sessionTtlSeconds));
+  app.post("/session/refresh", refresh(config.sessionTtlSeconds));
 
   app.post("/checkout", requireSession, (req: AuthedRequest, res) => {
     const items = (req.body?.items ?? []) as LineItem[];
