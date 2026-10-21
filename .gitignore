@@ -1,2 +1,8 @@
 node_modules/
 dist/
+
+# Cerebe per-dev overlay (restrict-only; leftover darkfactory.* still ignored)
+cerebe.local.yaml
+cerebe.local.yml
+darkfactory.local.yaml
+darkfactory.local.yml

@@ -1,0 +1,18 @@
+{
+  "enabledMcpjsonServers": [
+    "cerebe"
+  ],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "command": "cerebe mode guard --hook",
+            "type": "command"
+          }
+        ],
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash"
+      }
+    ]
+  }
+}
