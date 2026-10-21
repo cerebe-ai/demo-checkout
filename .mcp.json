@@ -1,0 +1,5 @@
+{
+  "mcpServers": {
+    "cerebe": { "command": "cerebe", "args": ["mcp"] }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "critics": [
+    {
+      "id": "codex",
+      "name": "Codex",
+      "command": "codex",
+      "enabled": true,
+      "adapter": "codex-sdk"
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor",
+      "command": "cursor-agent",
+      "enabled": true,
+      "adapter": "cursor-cli"
+    }
+  ],
+  "aggregation": {
+    "quorum": 2,
+    "blockingSeverities": [
+      "blocker",
+      "high"
+    ],
+    "blockOnMissingReview": true
+  },
+  "context": {
+    "guidanceFiles": [
+      "AGENTS.md",
+      "CLAUDE.md"
+    ],
+    "promptFragments": [],
+    "includeChangedFiles": false,
+    "maxChangedFileBytes": 100000,
+    "generatedFilePolicy": {
+      "mode": "compact"
+    }
+  },
+  "selfConsistency": {
+    "enabled": false
+  }
+}
