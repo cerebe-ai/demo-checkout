@@ -1,6 +1,8 @@
 # AGENTS.md — demo-checkout
 
-How to work in this repository. Coding agents follow it when they write changes, and Cerebe's critics read it when they review them.
+A small Express checkout service (login, sessions, order totals) that exists to show Cerebe reviewing a pull request; its open pull requests are the demo. Coding agents follow this file when they write changes, and Cerebe's critics read it when they review them.
+
+Commands are the `package.json` scripts; CI is `.github/workflows/test.yml`.
 
 ## API contracts
 
@@ -8,21 +10,31 @@ How to work in this repository. Coding agents follow it when they write changes,
 - Clients authenticate with `Authorization: Bearer <token>`. The service does not use cookie sessions; don't add one.
 - Errors are JSON — `{ "error": "<message>" }` — with a 4xx status.
 
+Held by `test/app.test.ts` (checkout needs a Bearer token; login returns one) and `cerebe/critic` review.
+
 ## Configuration
 
 - Every key in `config/default.json` is declared on the `Config` interface and checked by `loadConfig()` in `src/config.ts`. Don't add a setting the code doesn't read.
+
+Held by `loadConfig()`, which throws when a declared key is missing. It does not reject an undeclared or unread key; review holds that.
 
 ## Money
 
 - Amounts are integer minor units (cents), and tax is in basis points (`taxRateBasisPoints`). Never use floating point for money.
 
+Held by `test/billing.test.ts` (whole-cent totals, tax in basis points) and review.
+
 ## Tests
 
 - Every new endpoint or behaviour ships with tests in `test/` covering the success path and the 4xx paths. Run `npm test` before you push.
 
+Held by review, which checks that new paths are covered.
+
 ## Scope
 
 - One behaviour per pull request. Keep changes small enough to review in one sitting.
+
+Held by review.
 <!-- cerebe:pack-digest:v1 sha256=4cc3f38a5b2ce6608ec15a4caa7a5d584768fedfdbe72adb00953b244f548093 -->
 # Working with Cerebe's review
 
