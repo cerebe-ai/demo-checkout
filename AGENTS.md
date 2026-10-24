@@ -28,7 +28,7 @@ Held by `test/billing.test.ts` (whole-cent totals, tax in basis points) and revi
 
 - Every new endpoint or behaviour ships with tests in `test/` covering the success path and the 4xx paths. Run `npm test` before you push.
 
-Held by CI, which runs the suite on every pull request; review checks that new paths are covered.
+Held by review, which checks that new paths are covered.
 
 ## Scope
 
