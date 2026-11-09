@@ -2,5 +2,6 @@
   "port": 8080,
   "currency": "USD",
   "sessionTtlSeconds": 1800,
+  "sessionRefreshGraceSeconds": 300,
   "taxRateBasisPoints": 825
 }
