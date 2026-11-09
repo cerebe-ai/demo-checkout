@@ -25,6 +25,13 @@ export function getSession(token: string, now = Date.now()): Session | undefined
   return session;
 }
 
+export function refreshSession(token: string, ttlSeconds: number, now = Date.now()): Session | undefined {
+  const current = getSession(token, now);
+  if (!current) return undefined;
+  sessions.delete(token);
+  return createSession(current.userId, ttlSeconds, now);
+}
+
 export function revokeSession(token: string): void {
   sessions.delete(token);
 }
