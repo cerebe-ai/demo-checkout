@@ -1,7 +1,7 @@
 import express from "express";
 import { loadConfig } from "./config.js";
 import { login, requireSession, type AuthedRequest } from "./auth.js";
-import { totals, type LineItem } from "./billing.js";
+import { promoDiscountBasisPoints, totals, type LineItem } from "./billing.js";
 
 export function createApp() {
   const config = loadConfig();
@@ -20,8 +20,26 @@ export function createApp() {
       res.status(400).json({ error: "items are required" });
       return;
     }
+    const promoCode: unknown = req.body?.promoCode;
+    let discountBasisPoints = 0;
+    if (promoCode !== undefined) {
+      if (typeof promoCode !== "string") {
+        res.status(400).json({ error: "promoCode must be a string" });
+        return;
+      }
+      const discount = promoDiscountBasisPoints(promoCode);
+      if (discount === undefined) {
+        res.status(400).json({ error: "unknown promo code" });
+        return;
+      }
+      discountBasisPoints = discount;
+    }
     try {
-      res.json({ userId: req.userId, currency: config.currency, ...totals(items, config.taxRateBasisPoints) });
+      res.json({
+        userId: req.userId,
+        currency: config.currency,
+        ...totals(items, config.taxRateBasisPoints, discountBasisPoints),
+      });
     } catch (err) {
       res.status(400).json({ error: (err as Error).message });
     }
