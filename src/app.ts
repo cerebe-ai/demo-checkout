@@ -20,8 +20,27 @@ export function createApp() {
       res.status(400).json({ error: "items are required" });
       return;
     }
+    const shippingMethod = req.body?.shippingMethod ?? "standard";
+    if (typeof shippingMethod !== "string") {
+      res.status(400).json({ error: "shippingMethod must be a string" });
+      return;
+    }
+    let shippingCents: number;
+    if (shippingMethod === "standard") {
+      shippingCents = config.standardShippingCents;
+    } else if (shippingMethod === "express") {
+      shippingCents = config.expressShippingCents;
+    } else {
+      res.status(400).json({ error: "unknown shipping method" });
+      return;
+    }
     try {
-      res.json({ userId: req.userId, currency: config.currency, ...totals(items, config.taxRateBasisPoints) });
+      res.json({
+        userId: req.userId,
+        currency: config.currency,
+        shippingMethod,
+        ...totals(items, config.taxRateBasisPoints, shippingCents),
+      });
     } catch (err) {
       res.status(400).json({ error: (err as Error).message });
     }
