@@ -7,6 +7,8 @@ export interface Config {
   currency: string;
   sessionTtlSeconds: number;
   taxRateBasisPoints: number;
+  standardShippingCents: number;
+  expressShippingCents: number;
 }
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -14,7 +16,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 export function loadConfig(): Config {
   const raw = readFileSync(join(here, "..", "config", "default.json"), "utf8");
   const parsed = JSON.parse(raw) as Partial<Config>;
-  for (const key of ["port", "currency", "sessionTtlSeconds", "taxRateBasisPoints"] as const) {
+  for (const key of ["port", "currency", "sessionTtlSeconds", "taxRateBasisPoints", "standardShippingCents", "expressShippingCents"] as const) {
     if (parsed[key] === undefined) throw new Error(`config: missing ${key}`);
   }
   return parsed as Config;

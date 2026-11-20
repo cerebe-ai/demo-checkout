@@ -2,5 +2,7 @@
   "port": 8080,
   "currency": "USD",
   "sessionTtlSeconds": 1800,
-  "taxRateBasisPoints": 825
+  "taxRateBasisPoints": 825,
+  "standardShippingCents": 599,
+  "expressShippingCents": 1499
 }

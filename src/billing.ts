@@ -7,12 +7,16 @@ export interface LineItem {
 export interface Totals {
   subtotalCents: number;
   taxCents: number;
+  shippingCents: number;
   totalCents: number;
 }
 
-export function totals(items: LineItem[], taxRateBasisPoints: number): Totals {
+export function totals(items: LineItem[], taxRateBasisPoints: number, shippingCents: number): Totals {
   if (!Number.isInteger(taxRateBasisPoints) || taxRateBasisPoints < 0) {
     throw new RangeError("taxRateBasisPoints must be a non-negative integer");
+  }
+  if (!Number.isInteger(shippingCents) || shippingCents < 0) {
+    throw new RangeError("shippingCents must be a non-negative integer");
   }
   let subtotalCents = 0;
   for (const item of items) {
@@ -24,6 +28,7 @@ export function totals(items: LineItem[], taxRateBasisPoints: number): Totals {
     }
     subtotalCents += item.unitPriceCents * item.quantity;
   }
+  // Tax applies to merchandise only. Shipping is a flat fee in whole cents.
   const taxCents = Math.round((subtotalCents * taxRateBasisPoints) / 10_000);
-  return { subtotalCents, taxCents, totalCents: subtotalCents + taxCents };
+  return { subtotalCents, taxCents, shippingCents, totalCents: subtotalCents + taxCents + shippingCents };
 }
