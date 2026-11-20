@@ -1,7 +1,8 @@
 import express from "express";
 import { loadConfig } from "./config.js";
 import { login, requireSession, type AuthedRequest } from "./auth.js";
-import { totals, type LineItem } from "./billing.js";
+import { checkoutQuote, type LineItem } from "./billing.js";
+import { giftCardBalance } from "./giftcards.js";
 
 export function createApp() {
   const config = loadConfig();
@@ -20,8 +21,28 @@ export function createApp() {
       res.status(400).json({ error: "items are required" });
       return;
     }
+
+    let giftCardBalanceCents = 0;
+    const giftCard = req.body?.giftCard;
+    if (giftCard != null) {
+      if (typeof giftCard.balanceCents === "number") {
+        giftCardBalanceCents = giftCard.balanceCents;
+      } else if (typeof giftCard.code !== "string" || giftCard.code.length === 0) {
+        res.status(400).json({ error: "gift card code must be a string" });
+        return;
+      } else {
+        const known = giftCardBalance(giftCard.code);
+        if (known === undefined) {
+          giftCardBalanceCents = 0;
+        } else {
+          giftCardBalanceCents = known;
+        }
+      }
+    }
+
     try {
-      res.json({ userId: req.userId, currency: config.currency, ...totals(items, config.taxRateBasisPoints) });
+      const quote = checkoutQuote(items, config.taxRateBasisPoints, giftCardBalanceCents);
+      res.json({ userId: req.userId, currency: config.currency, ...quote });
     } catch (err) {
       res.status(400).json({ error: (err as Error).message });
     }
