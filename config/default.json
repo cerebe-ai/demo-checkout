@@ -2,5 +2,6 @@
   "port": 8080,
   "currency": "USD",
   "sessionTtlSeconds": 1800,
-  "taxRateBasisPoints": 825
+  "taxRateBasisPoints": 825,
+  "receiptFooter": "Thank you for your order"
 }

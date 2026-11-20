@@ -13,7 +13,7 @@ export function login(ttlSeconds: number) {
       return;
     }
     const session = createSession(userId, ttlSeconds);
-    res.status(201).json({ token: session.token, expiresAt: session.expiresAt });
+    res.status(201).json({ token: session.token });
   };
 }
 
