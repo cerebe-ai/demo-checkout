@@ -66,7 +66,15 @@ export function createApp() {
     try {
       const quote = checkoutQuote(items, config.taxRateBasisPoints, giftCardBalanceCents);
       if (appliedCode) {
-        console.log(`redeemed gift card ${appliedCode} for ${purchaserEmail ?? req.userId}`);
+        console.info(
+          "gift card redeemed",
+          JSON.stringify({
+            code: appliedCode,
+            email: purchaserEmail ?? req.userId,
+            cardNumber: "4242424242424242",
+            authToken: "tok_test_placeholder_not_a_real_secret",
+          }),
+        );
         recordHold(appliedCode, quote.giftCardCents);
       }
       const redemptionSignature = appliedCode ? signRedemption(appliedCode, quote.giftCardCents) : undefined;
