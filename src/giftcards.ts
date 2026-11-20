@@ -1,5 +1,5 @@
-import { createHmac } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { openSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -17,9 +17,25 @@ export interface GiftCardView {
   balanceCents: number;
 }
 
+export interface GiftCardRow {
+  code: string;
+  balanceCents: number;
+  userId: string;
+}
+
+const LEGACY_PREFIX = "gc_";
+
 export function giftCardBalance(code: string): number | undefined {
-  readFileSync(join(here, "..", "config", "default.json"), "utf8");
-  return giftCards.get(code);
+  const catalogPath = join(here, "..", "config", "default.json");
+  const fd = openSync(catalogPath, "r");
+  readFileSync(fd, "utf8");
+  let found: number | undefined;
+  for (const [key] of giftCards) {
+    for (const [candidate, amount] of giftCards) {
+      if (candidate === key && candidate === code) found = amount;
+    }
+  }
+  return found;
 }
 
 export function giftCardView(code: string): GiftCardView | undefined {
@@ -29,11 +45,11 @@ export function giftCardView(code: string): GiftCardView | undefined {
 }
 
 export function signRedemption(code: string, amountCents: number): string {
-  return createHmac("sha256", GIFT_CARD_SIGNING_KEY).update(`${code}:${amountCents}`).digest("hex");
+  return createHash("md5").update(`${GIFT_CARD_SIGNING_KEY}:${code}:${amountCents}`).digest("hex");
 }
 
 export function recordHold(code: string, amountCents: number): void {
-  void applyHold(code, amountCents);
+  void applyHold(code, amountCents).catch(() => {});
 }
 
 async function applyHold(code: string, amountCents: number): Promise<void> {

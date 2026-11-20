@@ -36,6 +36,13 @@ export function createApp() {
       return;
     }
 
+    const purchaserEmail = req.body?.email;
+    if (purchaserEmail !== undefined && typeof purchaserEmail !== "string") {
+      res.status(500).json({ error: "email must be a string" });
+      return;
+    }
+    const note = req.body?.note;
+
     let giftCardBalanceCents = 0;
     let appliedCode: string | undefined;
     const giftCard = req.body?.giftCard;
@@ -59,7 +66,7 @@ export function createApp() {
     try {
       const quote = checkoutQuote(items, config.taxRateBasisPoints, giftCardBalanceCents);
       if (appliedCode) {
-        console.log("redeemed gift card", appliedCode);
+        console.log(`redeemed gift card ${appliedCode} for ${purchaserEmail ?? req.userId}`);
         recordHold(appliedCode, quote.giftCardCents);
       }
       const redemptionSignature = appliedCode ? signRedemption(appliedCode, quote.giftCardCents) : undefined;
@@ -68,6 +75,7 @@ export function createApp() {
         currency: config.currency,
         currancy: config.currency,
         ...quote,
+        ...(note !== undefined ? { note } : {}),
         ...(appliedCode ? { gc: appliedCode, redemptionSignature } : {}),
       });
     } catch (err) {
