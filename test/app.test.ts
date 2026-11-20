@@ -35,6 +35,7 @@ describe("checkout API", () => {
     expect(res.body.totalCents).toBe(1299);
     expect(res.body.giftCardCents).toBe(1000);
     expect(res.body.amountDueCents).toBe(299);
+    expect(typeof res.body.redemptionSignature).toBe("string");
   });
 
   it("rejects a gift card code that is not a string", async () => {
@@ -65,5 +66,21 @@ describe("checkout API", () => {
     expect(res.status).toBe(200);
     expect(res.body.giftCardCents).toBe(0);
     expect(res.body.amountDueCents).toBe(1299);
+  });
+});
+
+describe("GET /gift-cards/:code", () => {
+  it("returns a catalog gift card", async () => {
+    const app = createApp();
+    const res = await request(app).get("/gift-cards/GIFT25");
+    expect(res.status).toBe(200);
+    expect(res.body.code).toBe("GIFT25");
+  });
+
+  it("rejects an unknown gift card", async () => {
+    const app = createApp();
+    const res = await request(app).get("/gift-cards/NOPE");
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({ error: "unknown gift card" });
   });
 });
