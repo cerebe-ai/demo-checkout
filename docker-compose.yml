@@ -1,0 +1,9 @@
+services:
+  api:
+    image: node:22
+    working_dir: /usr/src/app
+    command: npm start
+    ports:
+      - "8080:8080"
+    environment:
+      RECEIPT_SIGNING_KEY: whsec_test_4f8c2a91b6e04d77
